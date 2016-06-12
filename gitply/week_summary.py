@@ -156,7 +156,7 @@ containing a git repository which should be analyzed.\
                     red[pos] = deletions[user][date]
                     cnt[pos] = commits[user][date]
                 
-                fig, ax = plt.subplots(figsize=(8,4))
+                fig, ax = plt.subplots(figsize=(6,3))
                 ax.set_title("Weekly report for %s" % user)
                 ax.set_ylabel("Lines added/deleted")
                 ax.set_yscale('symlog')
