@@ -39,7 +39,7 @@ where the plot will go.
 
 Here's an example using a different repository (contributors anonymized):
 
-    $ python gitply.py ~/Zeall/backend --users user_map2.txt --pdf example.pdf
+    $ python gitply.py ~/other/repo --users user_map2.txt --pdf example.pdf
     History for anon4
       2015, week 32:  1 commits, +2    -0   
       -- Gap of 2 weeks
