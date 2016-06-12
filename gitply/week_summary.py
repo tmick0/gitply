@@ -161,7 +161,7 @@ containing a git repository which should be analyzed.\
                 ax.set_ylabel("Lines added/deleted")
                 ax.set_yscale('symlog')
                 ax.set_xlabel("Day of Week")
-                ax.set_xlim(offsets[week_ago], offsets[today])
+                ax.set_xlim(offsets[week_ago], offsets[today]+1)
                 ax.set_ylim(0, max(grn+red+[1])*1.5)
                 
                 ax.grid()
@@ -173,7 +173,7 @@ containing a git repository which should be analyzed.\
                 ax.set_xticklabels(labels, rotation='vertical')
                 
                 ax2 = ax.twinx()
-                ax2.set_xlim(offsets[week_ago], offsets[today])
+                ax2.set_xlim(offsets[week_ago], offsets[today]+1)
                 ax2.set_ylim(0, max(cnt)*1.5)
                 
                 ax2.set_ylabel("Commit count")
