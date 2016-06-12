@@ -14,10 +14,14 @@ To generate per-user commit statistics, pass this script the location of a git
 repository. You can also list several repos, and the commits from each will be
 combined.
 
-The default behavior is to print out a history that looks like this (email addresses
+There are currently two analyses that can be performed -- full history, at per-week
+granularity; and past-week history with daily granularity. The below examples use
+the full-history option.
+
+The normal behavior is to print out a history that looks like this (email addresses
 shown modified in order to prevent spam):
 
-    $ python gitply.py .
+    $ python gitply history .
     History for lq at le1 dot ca
       2016, week 23:  1 commits, +112  -0   
 
@@ -28,19 +32,19 @@ Notice that my two commits appear under two different email addresses. To combin
 them into one actual user, this software supports reading a "user map" from a
 file. For example:
 
-    $ python gitply.py . --users usermap_example.txt 
+    $ python gitply history . --users usermap_example.txt 
     History for le1ca
       2016, week 23:  2 commits, +436  -0  
 
 You can see how the user map is formatted by viewing the copy of usermap_example.txt
 included here in this repository.
 
-You can also generate a plot using gitply -- use the --pdf parameter to specify
+You can also generate a plot using gitply; use the --pdf parameter to specify
 where the plot will go. 
 
 Here's an example using a different repository (contributors anonymized):
 
-    $ python gitply.py ~/other/repo --users user_map2.txt --pdf example.pdf
+    $ python gitply history ~/other/repo --users user_map2.txt --pdf example.pdf
     History for anon4
       2015, week 32:  1 commits, +2    -0   
       -- Gap of 2 weeks
