@@ -132,6 +132,11 @@ The plot in example.pdf looks like this:
 
 ![Example plot](/example.png)
 
+A plot is made for each user. In each plot, activity is visualized per week.
+For each week, we show the total number of lines inserted (green) and removed
+(red) in log-scale (left y-axis). We also show the number of commits (blue line,
+right y-axis, linear scale) each week.
+
 In the actual PDF file, each user's plot is on a different page.
 
 If you don't want the textual output, and only the PDF, you can also supply
