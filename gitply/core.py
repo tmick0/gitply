@@ -1,4 +1,4 @@
-import re
+import re, os.path
 from datetime import datetime
 from utils import get_proc_iter
 
@@ -16,7 +16,7 @@ def get_repo_log(location, since=None):
     if since is not None:
         args.append("--since=%s" % since)
     
-    proc = get_proc_iter(args, cwd=location)
+    proc = get_proc_iter(args, cwd=os.path.expanduser(location))
     return proc
 
 def iterate_commits(log_lines):
