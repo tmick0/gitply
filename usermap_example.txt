@@ -1,0 +1,4 @@
+alice@example.com    alice
+alice.1@other.com    alice
+bob@example.com      bob
+bob555@other.com     bob
