@@ -38,10 +38,16 @@ class FileUserMap (AbstractUserMap):
         filename = os.path.expanduser(filename)
         with open(filename, 'r') as file:
             for line in file:
-                email, name = line.split(" ", 1)
-                self.name_map[email.strip()] = name.strip()
+                try:
+                    email, name = line.split(" ", 1)
+                    self.name_map[email.strip()] = name.strip()
+                except ValueError:
+                    continue
     def map(self, email):
-        return self.name_map[email]
+        try:
+            return self.name_map[email]
+        except KeyError:
+            return "unknown"
         
 def weeks_in_year(yr):
     """ Quick hack to return the number of ISO weeks in some given year. Based
