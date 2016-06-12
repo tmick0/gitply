@@ -3,7 +3,7 @@ Simple script for visualizing the contributions of each contributor to a reposit
 
 ## Requirements
 
-- Python (works on 2.7.11+, hangs for some reason on 3.5.1+ -- investigation pending)
+- Python (works on 2.7.11+ as well as 3.5.1+)
 - numpy
 - matplotlib
 - the git client (Python bindings not necessary)

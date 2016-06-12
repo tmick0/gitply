@@ -1,6 +1,5 @@
 import sys, os, os.path, subprocess, re
 from datetime import datetime, timedelta
-from subprocess import Popen
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from itertools import chain
@@ -56,16 +55,25 @@ def weeks_in_year(yr):
         isoyr, week, day = d.isocalendar()
     return week
 
+# Credit for this function goes to http://blog.endpoint.com/2015/01/getting-realtime-output-using-python.html
+def get_proc_iter(cmd, cwd=None):
+    """ Generates the output of the specified shell command one line at a time
+    """
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, cwd=cwd)
+    while True:
+        output = process.stdout.readline()
+        if output == b'' and process.poll() is not None:
+            break
+        if output:
+            yield output.rstrip().decode("utf-8")
+
 def get_repo_log(location):
     """ Returns an iterator over the log lines of a the git repo at the provided
         location. The log will be generated with arguments --numstat --no-notes
         --date=short, to facilitate parsing for the purposes of this script.
     """
-    wd = os.getcwd()
-    os.chdir(location)
-    proc = subprocess.Popen(["git", "log", "--numstat", "--date=short", "--no-notes"], stdout=subprocess.PIPE)
-    os.chdir(wd)
-    return iter(proc.stdout.readline,'')
+    proc = get_proc_iter(["git", "log", "--numstat", "--date=short", "--no-notes"], cwd=location)
+    return proc
 
 def iterate_commits(log_lines):
     """ When passed an iterator over the lines of a git log (see get_repo_log),
