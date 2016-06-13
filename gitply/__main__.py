@@ -1,11 +1,13 @@
 from weekly_history import main as weekly_history
 from week_summary   import main as week_summary
+from year_summary   import main as year_summary
 import sys
 
 def main(dest=None, *args):
     dest_map = {
         "weekly":  week_summary,
-        "history": weekly_history
+        "history": weekly_history,
+        "mosaic":  year_summary
     }
     
     if dest is None or dest not in dest_map:
