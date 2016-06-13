@@ -1,6 +1,7 @@
 import sys
 from datetime import datetime, timedelta
 from itertools import chain
+from math import ceil
 
 # for plotting
 import matplotlib.pyplot as plt
@@ -116,7 +117,26 @@ containing a git repository which should be analyzed.\
         
             labels  = []
             offsets = {}
-            colormap = plt.get_cmap('Greens')
+            
+            cdict = ((205.,247.,237.), (15.,191.,148.))
+            
+            cdict = {
+                'red':  (
+                    (0.0, cdict[0][0]/255, cdict[0][0]/255),
+                    (1.0, cdict[1][0]/255, cdict[1][0]/255)
+                ),
+                'green':(
+                    (0.0, cdict[0][1]/255, cdict[0][1]/255),
+                    (1.0, cdict[1][1]/255, cdict[1][1]/255)
+                ),
+                'blue': (
+                    (0.0, cdict[0][2]/255, cdict[0][2]/255),
+                    (1.0, cdict[1][2]/255, cdict[1][2]/255)
+                )
+            }
+            
+            plt.register_cmap(name='Sea', data=cdict)
+            colormap = plt.get_cmap('Sea')
             
             min_yr, min_week, _ = year_ago.isocalendar()
             max_yr, max_week, _ = today.isocalendar()
@@ -141,12 +161,12 @@ containing a git repository which should be analyzed.\
             
             for user in commits:
             
-                fig = plt.figure(figsize=(7.5, 2.25))
+                fig = plt.figure(figsize=(7.5, 1.65))
 
-                gs = gridspec.GridSpec(2, 1, height_ratios=[6, 1]) 
+                gs = gridspec.GridSpec(2, 1, height_ratios=[8, 1]) 
                 ax, cax = plt.subplot(gs[0]), plt.subplot(gs[1])
                 
-                maxcommits = max(commits[user].values())
+                maxcommits = ceil(max(commits[user].values()) * 1.5)
                 
                 for date, count in commits[user].items():
                     yr, wk, dow = date.isocalendar()
@@ -154,27 +174,36 @@ containing a git repository which should be analyzed.\
                     
                     ax.add_patch(
                         patches.Rectangle(
-                            (offset, dow - 1),
-                            1, 1,
-                            linewidth=0.4,
-                            facecolor=colormap(1. * (count) / (maxcommits+10) )
+                            (offset+0.05, dow - 1 + 0.05),
+                            0.95, 0.95,
+                            linewidth=0,
+                            facecolor=colormap(1. * (count - 1) / (maxcommits) )
                         )
                     )
                 
-                ax.set_title("Commit summary for %s" % user, y=1.5)
+                ax.set_title("Commit summary for %s" % user, y=1.28)
                 
                 ax.xaxis.tick_top()
-                ax.set_xticks(np.arange(len(offsets)))
-                ax.set_xticklabels(labels)
+                ax.set_xticks([x for x in np.arange(len(offsets)) if labels[int(x)] != ""])
+                ax.set_xticks(np.arange(len(offsets)), minor=True)
+                
+                ax.set_xticklabels([x for x in labels if x != ""])
                 ax.set_xlim(offsets[(min_yr, min_week)], offsets[(max_yr, max_week)]+1)
 
                 ax.set_ylim(0, 7)
-                ax.set_yticks(np.arange(7) + 0.5)
-                ax.set_yticklabels(["S","M","T","W","R","F","S"])
+                ax.set_yticks(np.arange(7))
+                ax.set_yticklabels(["S ","M ","T ","W ","R ","F ","S "])
                 ax.invert_yaxis()
                 
-                colorticks  = np.linspace(0., 1., 10, endpoint=True)
-                colorlabels = ["%d" % (x * (maxcommits+10)) for x in colorticks]
+                if maxcommits <= 10:
+                    top  = maxcommits
+                    step = 1.
+                else:
+                    top = (maxcommits - 1) + 11 - ((maxcommits - 1) % 11)
+                    step = top/11.
+
+                colorticks  = np.arange(0., top+(step/2), step) / (top)
+                colorlabels = ["%d" % (x*top) for x in colorticks]
                 
                 cbar = colorbar.ColorbarBase(
                         cax, cmap=colormap,
@@ -184,16 +213,22 @@ containing a git repository which should be analyzed.\
                 cbar.set_ticklabels(colorlabels)
                 cax.set_xlim(colorticks[0], colorticks[-1])
                 
+                for label in ax.get_xticklabels():
+                    label.set_horizontalalignment('left')
+                
+                for label in ax.get_yticklabels():
+                    label.set_horizontalalignment('center')
+                    label.set_verticalalignment('top')
+                
                 for item in (
                     [ax.xaxis.label, ax.yaxis.label] +
                     ax.get_xticklabels() + ax.get_yticklabels() +
                     cax.get_xticklabels()
                 ):
-                    item.set_fontsize(8)
+                    item.set_fontsize(7)
                 
-                ax.title.set_fontsize(12)
-
-                fig.subplots_adjust(top=0.55)
+                ax.title.set_fontsize(10)
+                fig.subplots_adjust(top=0.7, bottom=0.15)
                 
                 pdf.savefig(fig)
 
