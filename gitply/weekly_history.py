@@ -203,7 +203,7 @@ containing a git repository which should be analyzed.\
                 ax.set_ylabel("Lines added/deleted")
                 ax.set_yscale('symlog')
                 ax.set_xlabel("Week number")
-                ax.set_xlim(date_to_offset(min_yr, min_week), date_to_offset(max_yr, max_week))
+                ax.set_xlim(date_to_offset(min_yr, min_week), date_to_offset(max_yr, max_week)+1)
                 ax.set_ylim(0, max(grn+red+[1])*1.5)
                 
                 ax.grid()
@@ -215,7 +215,7 @@ containing a git repository which should be analyzed.\
                 ax.set_xticklabels(labels, rotation='vertical')
                 
                 ax2 = ax.twinx()
-                ax2.set_xlim(date_to_offset(min_yr, min_week), date_to_offset(max_yr, max_week))
+                ax2.set_xlim(date_to_offset(min_yr, min_week), date_to_offset(max_yr, max_week)+1)
                 ax2.set_ylim(0, max(cnt)*1.5)
                 
                 ax2.set_ylabel("Commit count")
