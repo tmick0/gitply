@@ -54,6 +54,7 @@ containing a git repository which should be analyzed.\
     user_map = NullUserMap()
     plotout = None
     printout = True
+    gitlab = None
 
     if "--help" in args:
         print(main.__doc__)
@@ -68,12 +69,18 @@ containing a git repository which should be analyzed.\
             plotout = next(it)
         elif a == "--noprint":
             printout = False
+        elif a == "--gitlab":
+            gitlab = next(it), next(it)
         else:
             repos.append(a)
         
     # Setup backend
-    coretype = GitCLIBackend
-    coreargs = repos
+    if gitlab is None:
+        coretype = GitCLIBackend
+        coreargs = repos
+    else:
+        coretype = GitlabBackend
+        coreargs = gitlab
 
     # Dictionaries for storing the data to be presented
     commits   = {}
