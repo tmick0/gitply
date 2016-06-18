@@ -3,146 +3,63 @@ Simple script for visualizing the contributions of each contributor to a reposit
 
 ## Requirements
 
-- Python (works on 2.7.11+ as well as 3.5.1+)
+- Python (tested on 2.7.11+)
 - numpy
 - matplotlib
+- python-gitlab (for optional Gitlab interface)
 - the git client (Python bindings not necessary)
 
 ## Usage
 
-To generate per-user commit statistics, pass this script the location of a git
-repository. You can also list several repos, and the commits from each will be
-combined.
+Currently, gitply supports three types of reports and two backends.
 
-There are currently two analyses that can be performed -- full history, at per-week
-granularity; and past-week history with daily granularity. The below examples use
-the full-history option.
+The report types available are:
 
-The normal behavior is to print out a history that looks like this (email addresses
-shown modified in order to prevent spam):
+- mosaic (Github-style contribution summary for a year)
+- history (Chart of commits, insertions, and deletions per week for the history of a project)
+- weekly (Chart of commits, insertions, and deletions per day for the past week)
 
-    $ python gitply history .
-    History for lq at le1 dot ca
-      2016, week 23:  1 commits, +112  -0   
+The backends are:
 
-    History for root at lo dot calho dot st
-      2016, week 23:  1 commits, +324  -0   
-  
-Notice that my two commits appear under two different email addresses. To combine
-them into one actual user, this software supports reading a "user map" from a
-file. For example:
+- git CLI (Obtains statistics from the logs of one or more local repositories)
+- Gitlab (Obtains statistics from a Gitlab instance using a private access token)
 
-    $ python gitply history . --users usermap_example.txt 
-    History for le1ca
-      2016, week 23:  2 commits, +436  -0  
+The git CLI backend should be stable and trustworthy. The Gitlab backend should be considered experimental for the time being. The git CLI backend will report the histories for the currently-checked out branches of each of the listed repositories, while the Gitlab backend will report the histories of the master branches of each repository hosted on the instance.
 
-You can see how the user map is formatted by viewing the copy of usermap_example.txt
-included here in this repository.
+The general syntax for generating some output using the CLI backend is:
 
-You can also generate a plot using gitply; use the --pdf parameter to specify
-where the plot will go. 
+    python gitply <report_type> [--users user_map.txt] [--pdf output_plot.pdf] [--noprint] [/paths/to/git/repos ...]
 
-Here's an example using a different repository (contributors anonymized):
+Or for the Gitlab backend:
 
-    $ python gitply history ~/other/repo --users user_map2.txt --pdf example.pdf
-    History for anon4
-      2015, week 32:  1 commits, +2    -0   
-      -- Gap of 2 weeks
-      2015, week 35:  4 commits, +182  -1   
-      2015, week 36:  2 commits, +461  -49  
-      -- Gap of 2 weeks
-      2015, week 39:  6 commits, +856  -361 
-      2015, week 40:  2 commits, +668  -291 
-      2015, week 41:  3 commits, +585  -198 
-      2015, week 42:  3 commits, +278  -76  
-      2015, week 43:  6 commits, +161  -50  
-      -- Gap of 1 week
-      2015, week 45:  2 commits, +165  -41  
+    python gitply <report_type> [--users user_map.txt] [--pdf output_plot.pdf] [--noprint] --gitlab <gitlab_url> <secret_key>
 
-    History for anon3
-      2015, week 32: 10 commits, +503  -24  
-      2015, week 33: 38 commits, +2028 -790 
-      2015, week 34: 15 commits, +2163 -960 
-      2015, week 35: 51 commits, +2438 -415 
-      2015, week 36: 25 commits, +669  -167 
-      2015, week 37: 53 commits, +1821 -162 
-      2015, week 38: 25 commits, +819  -41  
-      2015, week 39: 32 commits, +889  -103 
-      2015, week 40: 44 commits, +508  -100 
-      2015, week 41: 15 commits, +440  -363 
-      2015, week 42: 11 commits, +244  -104 
-      -- Gap of 1 week
-      2015, week 44:  8 commits, +102  -16  
-      2015, week 45:  1 commits, +221  -21  
-      2015, week 46:  2 commits, +60   -12  
-      2015, week 47: 20 commits, +517  -197 
-      -- Gap of 1 week
-      2015, week 49: 20 commits, +373  -67  
-      2015, week 50: 10 commits, +190  -14  
-      2015, week 51: 21 commits, +1032 -252 
-      2015, week 52: 12 commits, +108  -42  
-      -- Gap of 1 week
-      2016, week  1:  5 commits, +20   -3   
-      -- Gap of 1 week
-      2016, week  3: 11 commits, +332  -48  
-      2016, week  4:  3 commits, +34   -14  
-      -- Gap of 1 week
-      2016, week  6: 14 commits, +311  -178 
-      2016, week  7: 22 commits, +409  -142 
-      2016, week  8:  9 commits, +263  -181 
-      2016, week  9: 10 commits, +292  -144 
-      2016, week 10:  6 commits, +154  -33  
-      2016, week 11: 19 commits, +129  -112 
-      2016, week 12:  8 commits, +43   -12  
-      2016, week 13:  2 commits, +0    -3   
-      2016, week 14:  9 commits, +2133 -2139
-      2016, week 15:  1 commits, +9    -2   
-      2016, week 16:  2 commits, +111  -111 
-      2016, week 17: 14 commits, +9700 -10052
-      2016, week 18:  6 commits, +2075 -176 
-      -- Gap of 1 week
-      2016, week 20: 14 commits, +386  -398 
-      2016, week 21:  7 commits, +507  -24  
-      2016, week 22:  8 commits, +145  -10  
-      2016, week 23: 12 commits, +2015 -1834
+### Report types
 
-    History for anon2
-      2016, week  6:  2 commits, +366  -26  
-      2016, week  7:  4 commits, +325  -5   
-      2016, week  8:  2 commits, +224  -3   
-      2016, week  9: 21 commits, +2617 -219 
-      -- Gap of 2 weeks
-      2016, week 12: 10 commits, +4066 -614 
-      2016, week 13:  6 commits, +2480 -432 
-      2016, week 14:  2 commits, +654  -490 
-      -- Gap of 1 week
-      2016, week 16:  2 commits, +661  -229 
-      -- Gap of 2 weeks
-      2016, week 19:  3 commits, +1508 -47  
-      -- Gap of 2 weeks
-      2016, week 22:  1 commits, +1490 -29  
+The three plot types look like this:
 
-    History for anon1
-      2016, week 12:  1 commits, +143  -89  
-      2016, week 13:  2 commits, +58   -16  
-      2016, week 14:  3 commits, +137  -17  
-      2016, week 15:  2 commits, +403  -106 
-      -- Gap of 2 weeks
-      2016, week 18:  5 commits, +134  -38  
-      -- Gap of 3 weeks
-      2016, week 22:  1 commits, +13   -1   
-      2016, week 23:  1 commits, +485  -1   
+**Mosaic:**
 
-The plot in example.pdf looks like this:
+![Example of mosaic](/example_plots/mosaic.png)
 
-![Example plot](/example.png)
+The commits made on each day throughout the past year are counted. The year is displayed as a grid, where each column is a week. The color of a cell on the grid conveys how many commits were made on that day.
 
-A plot is made for each user. In each plot, activity is visualized per week.
-For each week, we show the total number of lines inserted (green) and removed
-(red) in log-scale (left y-axis). We also show the number of commits (blue line,
-right y-axis, linear scale) each week.
+**History:**
 
-In the actual PDF file, each user's plot is on a different page.
+![Example of history](/example_plots/history.png)
 
-If you don't want the textual output, and only the PDF, you can also supply
-the --noprint option.
+Each data point conveys the number of lines inserted (green bar) and removed (red bar), as well as the number of commits made (blue line), for each week in the repository's entire history. The additions/deletions are shown in log scale (left y-axis), and the commits are shown in linear scale (right y-axis).
+
+**Weekly:**
+
+![Example of weekly](/example_plots/weekly.png)
+
+As in the history plot, we count commits, insertions, and deletions. However, we count them per-day instead of per-week, and only display the most recent week of activity.
+
+With each report type, a plot for each user is displayed on its own page in the PDF.
+
+By default, gitply will also print out a plaintext summary of the data presented in the plot. This can be disabled using the `--noprint` option.
+
+### User maps
+
+Users sometimes configure their git clients on different machines using different email addresses. By default, gitply will treat each email address as belonging to a unique user. To combine several addresses into one logical email entity, a user map can be specified. Take a look at [/usermap_example.txt](usermap_example.txt) for an example of the format for this file.
