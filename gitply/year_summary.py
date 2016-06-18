@@ -13,8 +13,8 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 # gitply imports
 from maps import NullUserMap, FileUserMap
-from core import iterate_commits, get_repo_log
-from utils import weeks_in_year
+from core import GitCLIBackend, GitlabBackend
+from core.utils import weeks_in_year
 
 def main(*args):
     """\
@@ -72,6 +72,10 @@ containing a git repository which should be analyzed.\
             printout = False
         else:
             repos.append(a)
+        
+    # Setup backend
+    coretype = GitCLIBackend
+    coreargs = repos
 
     # Dictionary for storing the data to be presented
     commits   = {}
@@ -84,7 +88,7 @@ containing a git repository which should be analyzed.\
     
     # Processes the git logs and stores some intermediate results in the three
     # dictionaries instantiated above
-    for email, date, stats in chain(*[iterate_commits(get_repo_log(repo, since=year_ago.strftime("%Y-%m-%d"))) for repo in repos]):
+    for email, date, stats in coretype(*coreargs, since=year_ago.strftime("%Y-%m-%d")):
         
         # Trim date of commit to midnight of that day
         date = date.replace(hour=0,minute=0,second=0,microsecond=0)

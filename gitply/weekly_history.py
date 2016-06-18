@@ -1,6 +1,5 @@
 import sys
 from datetime import datetime, timedelta
-from itertools import chain
 
 # for plotting
 import matplotlib.pyplot as plt
@@ -9,8 +8,8 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 # gitply imports
 from maps import NullUserMap, FileUserMap
-from core import iterate_commits, get_repo_log
-from utils import weeks_in_year
+from core import GitCLIBackend, GitlabBackend
+from core.utils import weeks_in_year
 
 def main(*args):
     """\
@@ -72,6 +71,10 @@ containing a git repository which should be analyzed.\
             printout = False
         else:
             repos.append(a)
+        
+    # Setup backend
+    coretype = GitCLIBackend
+    coreargs = repos
 
     # Dictionaries for storing the data to be presented
     commits   = {}
@@ -85,7 +88,7 @@ containing a git repository which should be analyzed.\
     
     # Processes the git logs and stores some intermediate results in the three
     # dictionaries instantiated above
-    for email, date, stats in chain(*[iterate_commits(get_repo_log(repo)) for repo in repos]):
+    for email, date, stats in coretype(*coreargs):
 
         # We will use the ISO year and week number
         year, week, dow = date.isocalendar()

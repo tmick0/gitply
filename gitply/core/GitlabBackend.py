@@ -1,0 +1,2 @@
+class GitlabBackend (object):
+    pass
